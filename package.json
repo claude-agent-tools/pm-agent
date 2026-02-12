@@ -1,0 +1,24 @@
+{
+  "name": "pm-agent",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "seed": "bun run src/seed.ts",
+    "db:migrate": "bunx prisma migrate dev",
+    "db:generate": "bunx prisma generate"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^7.4.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.4.0",
+    "@synapsenwerkstatt/prisma-bun-sqlite-adapter": "^1.2.2",
+    "xstate": "^5.27.0"
+  }
+}
