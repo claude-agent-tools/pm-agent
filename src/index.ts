@@ -39,6 +39,8 @@ async function main() {
   for (const p of problems) {
     const entityNames = p.entities.map((ep) => ep.entity.name).join(", ");
     console.log(`[${p.state}] ${p.title}`);
+    if (p.impact) console.log(`  impact:      ${p.impact}`);
+    if (p.opportunity) console.log(`  opportunity: ${p.opportunity}`);
     console.log(`  → assigned to: ${entityNames}`);
   }
 

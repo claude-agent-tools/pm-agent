@@ -38,6 +38,8 @@ async function seed() {
     data: {
       title: "API response times > 2s on /users endpoint",
       description: "P95 latency has degraded since last deploy",
+      impact: "15% of users abandon checkout flow due to timeouts",
+      opportunity: "Recovering those users = ~$40k MRR",
       state: "identified",
     },
   });
@@ -46,6 +48,8 @@ async function seed() {
     data: {
       title: "Dashboard crashes on Safari 17",
       description: "TypeError in chart rendering library",
+      impact: "Safari users (22% of traffic) see blank dashboard",
+      opportunity: "Unblock enterprise clients who mandate Safari",
       state: "triaged",
     },
   });
@@ -54,6 +58,8 @@ async function seed() {
     data: {
       title: "No onboarding flow for new teams",
       description: "Users churn within first 3 days without guidance",
+      impact: "60% of new teams never complete setup",
+      opportunity: "Guided onboarding could double activation rate",
       state: "identified",
     },
   });

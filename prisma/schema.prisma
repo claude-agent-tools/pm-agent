@@ -22,6 +22,8 @@ model Problem {
   id          String          @id @default(cuid())
   title       String
   description String?
+  impact      String?
+  opportunity String?
   state       String          @default("identified")
   entities    EntityProblem[]
   createdAt   DateTime        @default(now())
