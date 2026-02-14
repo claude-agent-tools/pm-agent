@@ -4,8 +4,8 @@
     "hooks": [
       {
         "type": "command",
-        "command": "cd ${CLAUDE_PLUGIN_ROOT} && bun install --frozen-lockfile 2>/dev/null || bun install",
-        "timeout": 30
+        "command": "cd ${CLAUDE_PLUGIN_ROOT} && [ -d node_modules ] || bun install",
+        "timeout": 60
       }
     ]
   }
