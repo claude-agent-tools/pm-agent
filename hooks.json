@@ -1,10 +1,16 @@
 {
-  "hooks": [
-    {
-      "event": "SessionStart",
-      "type": "command",
-      "command": "cd ${CLAUDE_PLUGIN_ROOT} && [ -d node_modules ] || bun install",
-      "timeout": 60
-    }
-  ]
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd ${CLAUDE_PLUGIN_ROOT} && [ -d node_modules ] || bun install",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
 }

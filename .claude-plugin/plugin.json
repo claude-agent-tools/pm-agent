@@ -1,6 +1,6 @@
 {
   "name": "pm-agent",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Conversational problem management. Capture, decorate, and organize problems with guided workflows.",
   "author": {
     "name": "uptown"
