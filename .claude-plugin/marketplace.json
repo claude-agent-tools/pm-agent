@@ -1,0 +1,12 @@
+{
+  "name": "pm-agent",
+  "description": "Problem management plugins",
+  "plugins": [
+    {
+      "name": "pm-agent",
+      "description": "Conversational problem management. Capture, decorate, and organize problems with guided workflows.",
+      "version": "0.1.0",
+      "source": "."
+    }
+  ]
+}

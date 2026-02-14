@@ -1,10 +1,11 @@
-import { db } from "./db.ts";
+import { db } from "./db/index.ts";
+import { entities, problems, entityProblems } from "./db/schema.ts";
 
-async function seed() {
-  // Clean existing data
-  await db.entityProblem.deleteMany();
-  await db.problem.deleteMany();
-  await db.entity.deleteMany();
+function seed() {
+  // Clean existing data (order matters for FK constraints)
+  db.delete(entityProblems).run();
+  db.delete(problems).run();
+  db.delete(entities).run();
 
   // Create entity hierarchy:
   //   Acme Corp
@@ -13,75 +14,51 @@ async function seed() {
   //   │   └── Frontend
   //   └── Product
 
-  const acme = await db.entity.create({
-    data: { name: "Acme Corp" },
-  });
+  const [acme] = db.insert(entities).values({ name: "Acme Corp" }).returning().all();
 
-  const engineering = await db.entity.create({
-    data: { name: "Engineering", parentId: acme.id },
-  });
+  const [engineering] = db.insert(entities).values({ name: "Engineering", parentId: acme!.id }).returning().all();
 
-  const backend = await db.entity.create({
-    data: { name: "Backend", parentId: engineering.id },
-  });
+  const [backend] = db.insert(entities).values({ name: "Backend", parentId: engineering!.id }).returning().all();
 
-  const frontend = await db.entity.create({
-    data: { name: "Frontend", parentId: engineering.id },
-  });
+  const [frontend] = db.insert(entities).values({ name: "Frontend", parentId: engineering!.id }).returning().all();
 
-  const product = await db.entity.create({
-    data: { name: "Product", parentId: acme.id },
-  });
+  const [product] = db.insert(entities).values({ name: "Product", parentId: acme!.id }).returning().all();
 
   // Create problems
-  const p1 = await db.problem.create({
-    data: {
-      title: "API response times > 2s on /users endpoint",
-      description: "P95 latency has degraded since last deploy",
-      impact: "15% of users abandon checkout flow due to timeouts",
-      opportunity: "Recovering those users = ~$40k MRR",
-      state: "identified",
-    },
-  });
+  const [p1] = db.insert(problems).values({
+    title: "API response times > 2s on /users endpoint",
+    description: "P95 latency has degraded since last deploy",
+    impact: "15% of users abandon checkout flow due to timeouts",
+    opportunity: "Recovering those users = ~$40k MRR",
+    state: "identified",
+  }).returning().all();
 
-  const p2 = await db.problem.create({
-    data: {
-      title: "Dashboard crashes on Safari 17",
-      description: "TypeError in chart rendering library",
-      impact: "Safari users (22% of traffic) see blank dashboard",
-      opportunity: "Unblock enterprise clients who mandate Safari",
-      state: "triaged",
-    },
-  });
+  const [p2] = db.insert(problems).values({
+    title: "Dashboard crashes on Safari 17",
+    description: "TypeError in chart rendering library",
+    impact: "Safari users (22% of traffic) see blank dashboard",
+    opportunity: "Unblock enterprise clients who mandate Safari",
+    state: "triaged",
+  }).returning().all();
 
-  const p3 = await db.problem.create({
-    data: {
-      title: "No onboarding flow for new teams",
-      description: "Users churn within first 3 days without guidance",
-      impact: "60% of new teams never complete setup",
-      opportunity: "Guided onboarding could double activation rate",
-      state: "identified",
-    },
-  });
+  const [p3] = db.insert(problems).values({
+    title: "No onboarding flow for new teams",
+    description: "Users churn within first 3 days without guidance",
+    impact: "60% of new teams never complete setup",
+    opportunity: "Guided onboarding could double activation rate",
+    state: "identified",
+  }).returning().all();
 
   // Link problems to entities (many-to-many)
   // p1 affects Backend
-  await db.entityProblem.create({
-    data: { entityId: backend.id, problemId: p1.id },
-  });
+  db.insert(entityProblems).values({ entityId: backend!.id, problemId: p1!.id }).run();
 
   // p2 affects Frontend
-  await db.entityProblem.create({
-    data: { entityId: frontend.id, problemId: p2.id },
-  });
+  db.insert(entityProblems).values({ entityId: frontend!.id, problemId: p2!.id }).run();
 
   // p3 affects both Product and Engineering (cross-cutting)
-  await db.entityProblem.create({
-    data: { entityId: product.id, problemId: p3.id },
-  });
-  await db.entityProblem.create({
-    data: { entityId: engineering.id, problemId: p3.id },
-  });
+  db.insert(entityProblems).values({ entityId: product!.id, problemId: p3!.id }).run();
+  db.insert(entityProblems).values({ entityId: engineering!.id, problemId: p3!.id }).run();
 
   console.log("Seeded:");
   console.log(`  ${5} entities`);
@@ -89,9 +66,4 @@ async function seed() {
   console.log(`  ${4} entity-problem links`);
 }
 
-seed()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => db.$disconnect());
+seed();

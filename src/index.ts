@@ -1,19 +1,21 @@
-import { db } from "./db.ts";
+import { isNull } from "drizzle-orm";
+import { db } from "./db/index.ts";
+import { entities, problems } from "./db/schema.ts";
 import { createActor } from "xstate";
 import { problemMachine } from "./machines/problem.ts";
 
-async function main() {
-  // Query entity tree
-  const roots = await db.entity.findMany({
-    where: { parentId: null },
-    include: {
+function main() {
+  // Query entity tree (roots with children and grandchildren)
+  const roots = db.query.entities.findMany({
+    where: isNull(entities.parentId),
+    with: {
       children: {
-        include: {
+        with: {
           children: true,
         },
       },
     },
-  });
+  }).sync();
 
   console.log("=== Entity Tree ===");
   for (const root of roots) {
@@ -27,17 +29,17 @@ async function main() {
   }
 
   // Query problems with their entity assignments
-  const problems = await db.problem.findMany({
-    include: {
-      entities: {
-        include: { entity: true },
+  const allProblems = db.query.problems.findMany({
+    with: {
+      entityProblems: {
+        with: { entity: true },
       },
     },
-  });
+  }).sync();
 
   console.log("\n=== Problems ===");
-  for (const p of problems) {
-    const entityNames = p.entities.map((ep) => ep.entity.name).join(", ");
+  for (const p of allProblems) {
+    const entityNames = p.entityProblems.map((ep) => ep.entity.name).join(", ");
     console.log(`[${p.state}] ${p.title}`);
     if (p.impact) console.log(`  impact:      ${p.impact}`);
     if (p.opportunity) console.log(`  opportunity: ${p.opportunity}`);
@@ -46,7 +48,7 @@ async function main() {
 
   // Demo: run a problem through the state machine
   console.log("\n=== State Machine Demo ===");
-  const demo = problems[0];
+  const demo = allProblems[0];
   if (demo) {
     const actor = createActor(problemMachine, {
       snapshot: problemMachine.resolveState({ value: demo.state, context: { problemId: demo.id, title: demo.title } }),
@@ -69,9 +71,4 @@ async function main() {
   }
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => db.$disconnect());
+main();

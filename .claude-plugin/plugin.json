@@ -1,0 +1,10 @@
+{
+  "name": "pm-agent",
+  "version": "0.1.0",
+  "description": "Conversational problem management. Capture, decorate, and organize problems with guided workflows.",
+  "author": {
+    "name": "uptown"
+  },
+  "keywords": ["problem-management", "product-management", "state-machine"],
+  "commands": ["./commands/problem.md"]
+}
