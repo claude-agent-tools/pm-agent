@@ -4,6 +4,14 @@ import { entities, problems, entityProblems } from "./db/schema.ts";
 import { createActor } from "xstate";
 import { problemMachine } from "./machines/problem.ts";
 
+// ── Database operations ──
+
+export function resetAll() {
+  db.delete(entityProblems).run();
+  db.delete(problems).run();
+  db.delete(entities).run();
+}
+
 // ── Entity operations ──
 
 export function listEntities() {
