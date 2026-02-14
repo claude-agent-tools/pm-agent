@@ -37,8 +37,8 @@ export function getEntityTree() {
   }).sync();
 }
 
-export function addEntity(name: string, parentId?: string) {
-  return db.insert(entities).values({ name, parentId }).returning().all()[0]!;
+export function addEntity(name: string, parentId?: string, description?: string) {
+  return db.insert(entities).values({ name, parentId, description }).returning().all()[0]!;
 }
 
 export function findEntity(query: string) {

@@ -18,6 +18,7 @@ if (isNew) {
   sqlite.run(`CREATE TABLE IF NOT EXISTS entities (
     id text PRIMARY KEY NOT NULL,
     name text NOT NULL,
+    description text,
     parent_id text,
     created_at integer NOT NULL,
     updated_at integer NOT NULL,
@@ -42,6 +43,13 @@ if (isNew) {
     FOREIGN KEY (problem_id) REFERENCES problems(id)
   )`);
   sqlite.run(`CREATE UNIQUE INDEX IF NOT EXISTS entity_problems_entity_id_problem_id_unique ON entity_problems (entity_id, problem_id)`);
+}
+
+// Migrate existing DBs: add description column if missing
+try {
+  sqlite.run(`ALTER TABLE entities ADD COLUMN description text`);
+} catch (_) {
+  // column already exists
 }
 
 export const db = drizzle(sqlite, { schema });

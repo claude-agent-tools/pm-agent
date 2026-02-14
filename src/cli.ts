@@ -34,8 +34,8 @@ try {
         break;
       case "add": {
         const name = args[2] ?? flag("name");
-        if (!name) fail("Name required: entity add <name> [--parent <id>]");
-        out(ops.addEntity(name, flag("parent")));
+        if (!name) fail("Name required: entity add <name> [--parent <id>] [--description \"...\"]");
+        out(ops.addEntity(name, flag("parent"), flag("description")));
         break;
       }
       case "find": {

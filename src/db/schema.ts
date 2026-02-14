@@ -7,6 +7,7 @@ import { createId } from "@paralleldrive/cuid2";
 export const entities = sqliteTable("entities", {
   id: text("id").primaryKey().$defaultFn(() => createId()),
   name: text("name").notNull(),
+  description: text("description"),
   parentId: text("parent_id").references((): any => entities.id),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
