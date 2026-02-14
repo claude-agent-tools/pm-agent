@@ -9,7 +9,7 @@
     {
       "name": "pm-agent",
       "description": "Conversational problem management. Capture, decorate, and organize problems with guided workflows.",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "source": "./"
     }
   ]

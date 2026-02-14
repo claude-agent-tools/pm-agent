@@ -20,7 +20,13 @@ function fail(msg: string): never {
 
 try {
   if (resource === "status") {
-    out({ entities: ops.getEntityTree(), problems: ops.listProblems() });
+    out({
+      context: ops.getContext(),
+      entities: ops.getEntityTree(),
+      problems: ops.listProblems(),
+      solutions: ops.listSolutions(),
+      tasks: ops.listTasks(),
+    });
   } else if (resource === "reset") {
     ops.resetAll();
     out({ ok: true, message: "All data cleared" });
@@ -126,8 +132,109 @@ try {
       default:
         fail(`Unknown problem action: ${action}. Use: list, get, add, update, transition, find, assign, unassign`);
     }
+  } else if (resource === "solution") {
+    switch (action) {
+      case "list":
+        out(ops.listSolutions(flag("problem")));
+        break;
+      case "get": {
+        const id = args[2];
+        if (!id) fail("ID required: solution get <id>");
+        const s = ops.getSolution(id);
+        if (!s) fail(`Solution ${id} not found`);
+        out(s);
+        break;
+      }
+      case "add": {
+        const title = flag("title");
+        const problemId = flag("problem");
+        if (!title || !problemId) fail("Required: solution add --title \"...\" --problem <problem-id>");
+        out(ops.addSolution({ title, description: flag("description"), problemId }));
+        break;
+      }
+      case "update": {
+        const id = args[2];
+        if (!id) fail("ID required: solution update <id> --field value");
+        const result = ops.updateSolution(id, {
+          title: flag("title"),
+          description: flag("description"),
+          state: flag("state"),
+        });
+        if (!result) fail(`Solution ${id} not found`);
+        out(result);
+        break;
+      }
+      default:
+        fail(`Unknown solution action: ${action}. Use: list, get, add, update`);
+    }
+  } else if (resource === "task") {
+    switch (action) {
+      case "list":
+        out(ops.listTasks({
+          solutionId: flag("solution"),
+          parentId: flag("parent"),
+          state: flag("state"),
+        }));
+        break;
+      case "get": {
+        const id = args[2];
+        if (!id) fail("ID required: task get <id>");
+        const t = ops.getTask(id);
+        if (!t) fail(`Task ${id} not found`);
+        out(t);
+        break;
+      }
+      case "add": {
+        const title = flag("title");
+        if (!title) fail("Required: task add --title \"...\" [--solution <id>] [--parent <id>] [--entity <id>]");
+        out(ops.addTask({
+          title,
+          description: flag("description"),
+          solutionId: flag("solution"),
+          parentId: flag("parent"),
+          entityId: flag("entity"),
+          position: flag("position") ? parseInt(flag("position")!) : undefined,
+        }));
+        break;
+      }
+      case "update": {
+        const id = args[2];
+        if (!id) fail("ID required: task update <id> --field value");
+        const result = ops.updateTask(id, {
+          title: flag("title"),
+          description: flag("description"),
+          state: flag("state"),
+          entityId: flag("entity"),
+          position: flag("position") ? parseInt(flag("position")!) : undefined,
+        });
+        if (!result) fail(`Task ${id} not found`);
+        out(result);
+        break;
+      }
+      case "activate": {
+        const id = args[2];
+        if (!id) fail("ID required: task activate <id>");
+        out(ops.setActiveTask(id));
+        break;
+      }
+      default:
+        fail(`Unknown task action: ${action}. Use: list, get, add, update, activate`);
+    }
+  } else if (resource === "context") {
+    switch (action) {
+      case "show":
+      case undefined:
+        out(ops.getContext());
+        break;
+      case "clear":
+        ops.clearActiveTask();
+        out({ ok: true, message: "Active task cleared" });
+        break;
+      default:
+        fail(`Unknown context action: ${action}. Use: show, clear`);
+    }
   } else {
-    fail(`Unknown resource: ${resource}. Use: problem, entity`);
+    fail(`Unknown resource: ${resource}. Use: problem, entity, solution, task, context`);
   }
 } catch (e: any) {
   fail(e.message);
