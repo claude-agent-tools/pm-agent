@@ -41,6 +41,14 @@ export function addEntity(name: string, parentId?: string, description?: string)
   return db.insert(entities).values({ name, parentId, description }).returning().all()[0]!;
 }
 
+export function updateEntity(id: string, data: { name?: string; description?: string }) {
+  return db.update(entities)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(entities.id, id))
+    .returning()
+    .all()[0];
+}
+
 export function findEntity(query: string) {
   return db.query.entities.findMany({
     where: like(entities.name, `%${query}%`),

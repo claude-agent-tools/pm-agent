@@ -38,6 +38,17 @@ try {
         out(ops.addEntity(name, flag("parent"), flag("description")));
         break;
       }
+      case "update": {
+        const id = args[2];
+        if (!id) fail("ID required: entity update <id> --name \"...\" --description \"...\"");
+        const result = ops.updateEntity(id, {
+          name: flag("name"),
+          description: flag("description"),
+        });
+        if (!result) fail(`Entity ${id} not found`);
+        out(result);
+        break;
+      }
       case "find": {
         const query = args[2];
         if (!query) fail("Query required: entity find <query>");
@@ -45,7 +56,7 @@ try {
         break;
       }
       default:
-        fail(`Unknown entity action: ${action}. Use: list, tree, add, find`);
+        fail(`Unknown entity action: ${action}. Use: list, tree, add, update, find`);
     }
   } else if (resource === "problem") {
     switch (action) {
