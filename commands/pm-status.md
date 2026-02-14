@@ -11,14 +11,8 @@ Show the user a clear overview of their problem management database.
 
 ## Step 1: Get the data
 
-Run both commands:
-
 ```bash
-bun run ${CLAUDE_PLUGIN_ROOT}/src/cli.ts entity tree
-```
-
-```bash
-bun run ${CLAUDE_PLUGIN_ROOT}/src/cli.ts problem list
+bun run ${CLAUDE_PLUGIN_ROOT}/src/cli.ts status
 ```
 
 ## Step 2: Display as a readable summary

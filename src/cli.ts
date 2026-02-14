@@ -19,7 +19,9 @@ function fail(msg: string): never {
 }
 
 try {
-  if (resource === "reset") {
+  if (resource === "status") {
+    out({ entities: ops.getEntityTree(), problems: ops.listProblems() });
+  } else if (resource === "reset") {
     ops.resetAll();
     out({ ok: true, message: "All data cleared" });
   } else if (resource === "entity") {
