@@ -6,5 +6,6 @@
     "name": "uptown"
   },
   "keywords": ["problem-management", "product-management", "state-machine"],
-  "commands": ["./commands/problem.md"]
+  "commands": ["./commands/problem.md"],
+  "hooks": "./hooks.json"
 }
